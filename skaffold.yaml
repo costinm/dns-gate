@@ -1,0 +1,45 @@
+apiVersion: skaffold/v4beta3
+kind: Config
+metadata:
+  name:	dns-sync-gcp
+
+build:
+  tagPolicy:
+    dateTime:
+        format: "20060102%H%M%S"
+
+  artifacts:
+    - context: .
+      image: costinm/dns-sync-gcp
+      ko:
+      # custom:
+      #  buildCommand: make push
+        dependencies:
+          paths:
+            - Makefile
+            - pkg/**
+            - "*.go"
+
+profiles:
+  - name: k8s
+    deploy:
+      helm:
+        releases:
+          - chartPath: manifests/charts/dns-gate
+            name: dns-gate-gcp
+            namespace: dns-system
+
+            setValues:
+              profile: ambient
+              env:
+                - name: "GOOGLE_PROJECT_ID"
+                  value: "dmeshgate"
+
+
+  # skaffold dev -p cloudrun --cleanup=false
+  - name: cloudrun
+    deploy:
+      cloudrun:
+        projectid: dmeshgate
+        region: us-central1
+

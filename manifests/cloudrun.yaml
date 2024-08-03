@@ -1,0 +1,33 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: dns-sync-gcp
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/launch-stage: ALPHA
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+
+        # Attach to the VPC (no connector)
+        run.googleapis.com/network-interfaces: '[{"network": "default", "subnetwork": "default"}]'
+
+        autoscaling.knative.dev/minScale: '0'
+        autoscaling.knative.dev/maxScale: '1'
+        # run.googleapis.com/cpu-throttling: 'false'
+    spec:
+      containerConcurrency: 1000
+      timeoutSeconds: 900
+      serviceAccountName: dns-sync
+      containers:
+        - name: app
+          image: costinm/dns-sync-gcp:latest
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1G

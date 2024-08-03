@@ -1,0 +1,13 @@
+image:
+  repository: costinm
+  tag: latest
+  pullPolicy: Always
+
+env: []
+
+extraVolumes: []
+
+extraVolumeMounts: []
+
+resources: {}
+
