@@ -20,8 +20,8 @@ spec:
         - name: app
           image: {{ .Values.image.repository }}/dns-sync-gcp:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.env }}
           workingDir: /var/run/dns
+          {{- with .Values.env }}
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}

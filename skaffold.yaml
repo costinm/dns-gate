@@ -20,6 +20,18 @@ build:
             - pkg/**
             - "*.go"
 
+deploy:
+      helm:
+        releases:
+          - chartPath: manifests/charts/dns-gate
+            name: dns-gate-gcp
+            namespace: dns-system
+
+            setValues:
+              profile: ambient
+              env:
+                - name: "GOOGLE_PROJECT_ID"
+                  value: "dmeshgate"
 profiles:
   - name: k8s
     deploy:

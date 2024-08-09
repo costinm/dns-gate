@@ -9,8 +9,8 @@ import (
 	"syscall"
 
 	"github.com/costinm/dns-sync-gcp/pkg/provider/google"
+	"github.com/costinm/dns-sync/pkg/config"
 	"github.com/costinm/dns-sync/pkg/dns_service"
-	"github.com/costinm/dns-sync/pkg/filecfg"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -19,15 +19,15 @@ import (
 // use CRDs or other neutral interfaces).
 func main() {
 	// Load the config file
-	cfg := &google.GoogleProviderConfig{}
-	err := filecfg.GetConfig("google-dns.yaml", cfg)
+	ctx := context.Background()
+	gcfg, err := config.Get[google.GoogleProviderConfig](ctx, "google-dns")
 	if err != nil {
 		log.Fatal("Failed to parse config`", err)
 	}
 
 	mux := http.NewServeMux()
 
-	Start(mux, cfg)
+	Start(mux, gcfg)
 
 	// Start the HTTP server.
 	go func() {
